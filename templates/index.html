@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Search API</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        async function fetchNews(event) {
+            event.preventDefault();
+            const query = document.getElementById('search-query').value;
+            const response = await fetch(`/api/news?q=${query}`);
+            const data = await response.json();
+            displayNews(data);
+        }
+
+        function displayNews(data) {
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = '';
+
+            if (data.articles && data.articles.length > 0) {
+                data.articles.forEach(article => {
+                    const articleDiv = document.createElement('div');
+                    articleDiv.className = 'article';
+                    articleDiv.innerHTML = `
+                        <h3><a href="${article.url}" target="_blank">${article.title}</a></h3>
+                        <p>${article.description}</p>
+                    `;
+                    resultsContainer.appendChild(articleDiv);
+                });
+            } else {
+                resultsContainer.innerHTML = '<p>No articles found.</p>';
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Search News Articles</h1>
+        <form onsubmit="fetchNews(event)">
+            <input type="text" id="search-query" placeholder="Enter search term..." required>
+            <button type="submit">Search</button>
+        </form>
+        <div id="results"></div>
+    </div>
+</body>
+</html>
